@@ -1,6 +1,6 @@
 <center><img src="image/oldest_businesses_map.png"></center>
 
-# 🌍 Uncovering-Oldest-Businesses-in-the-World
+# 🌍 Uncovering Oldest Businesses in the World
 
 Some businesses manage to survive for centuries despite wars, political shifts, economic crises, and technological change. This project explores the **oldest continuously operating businesses in the world** using a cleaned dataset compiled by ***BusinessFinancing.co.uk***.
 
@@ -46,20 +46,21 @@ The analysis focuses on **combining multiple datasets using different types of j
 
 ## 🔍 Analysis Process
 
- **Data Integration**
-- Business data was merged with country data using `country_code`
-- Old and new business records were combined into a single dataset
-- Business records were enriched with category descriptions
+### Data Integration
+- **INNER JOIN** `businesses` with `countries` on `country_code` to keep only businesses with valid country data.  
+- Combine `businesses` and `new_businesses` using **concatenation** to create a unified dataset.  
+- **LEFT JOIN** with `categories` on `category_code` to add category info without losing records.
 
-**Data Validation**
-- Join integrity was enforced using `validate`
-- Missing values were identified after merging
-- Outer join was used to expose gaps in country coverage
+### Data Validation
+- Enforce join integrity using `validate` (`one_to_one`, `many_to_one`).  
+- Check for missing values after each merge.  
+- **OUTER JOIN** with `countries` to identify missing business data by country.
 
-**Data Analysis**
-- Businesses were sorted by founding year
-- Grouping and aggregation were used to identify oldest records
-- Missing data counts were computed per continent
+### Data Analysis
+- Sort businesses by `year_founded` to find earliest active businesses.  
+- Group by continent and category to find minimum founding years.  
+- **RIGHT JOIN** to merge continent-level minimum founding years back into the full dataset.  
+- Count missing businesses per continent to highlight data gaps.
 
 ---
 
@@ -67,39 +68,43 @@ The analysis focuses on **combining multiple datasets using different types of j
 
 **1. What is the oldest business on each continent?**
 
-The oldest business per continent was identified by:
-- Merging `businesses` and `countries` dataset on an inner join
-- Grouping by `continent`
-- Selecting the minimum founding year per group
+The oldest active business per continent was identified by:
+- Performing an **INNER JOIN** between the `businesses` and `countries` datasets on `country_code`
+- Sorting businesses by `year_founded`
+- Grouping by `continent` and selecting the **minimum founding year**
+- Using a **RIGHT JOIN** to merge these minimum founding years back into the full dataset, retrieving complete business records
 
-The resulting dataset lists the **oldest continuously operating business in each continent**.
+This produced a dataset listing the **oldest continuously active business in each continent**, including the associated country, business name, and founding year.
 
 **2. How many countries per continent lack data on the oldest businesses?**
 
-To identify missing records:
-- `businesses` and `new_businesses` datasets were concatenated
-- An outer join with country data revealed missing business entries
-- Countries with no recorded businesses were counted per continent
+To identify countries without recorded oldest active businesses:
+- The `businesses` and `new_businesses` datasets were combined using **concatenation**
+- An **OUTER JOIN** with the `countries` dataset exposed missing business entries
+- Countries with null business values were counted per continent
 
-This shows **how many countries in each continent lack data** on their oldest businesses, highlighting gaps in global business history coverage.
+This highlights **data coverage gaps** across continents where no oldest active business information is available.
 
-**3. What is oldest business category, and on which continent?**
+**3. What is the oldest business category, and on which continent?**
 
-Oldest business category was analyzed by:
-- Joining `businesses` with both `countries` and `categories` datasets
-- Grouping by continent and business category
-- Identifying the earliest founding year per category
-- Selecting the oldest category within each continent
+The oldest business category per continent was determined by:
+- Applying an **INNER JOIN** between `businesses` and `countries`
+- Enriching business records using a **LEFT JOIN** with the `categories` dataset
+- Grouping by `continent` and `category`
+- Selecting the **earliest founding year** per category
+- Identifying the oldest category within each continent
 
-The results indicate that **essential service categories** are the most resilient over long periods.
+The results show that **essential service categories** most frequently appear among the oldest active businesses across continents.
 
 ---
 
 ## 🧠 Conclusion
 
-The analysis demonstrates that businesses capable of lasting centuries tend to:
-- Serve essential and recurring human needs
-- Be deeply embedded in cultural and regional traditions
-- Adapt across major historical, political, and economic changes
+This project identifies the **oldest active businesses** across continents and categories using different join strategies:
 
-By combining relational datasets and applying structured data analysis, this project provides insight into **what enables businesses to stand the test of time and where those conditions are most common**.
+- **INNER JOIN** ensures valid business-country matches  
+- **LEFT JOIN** enriches businesses with category data  
+- **RIGHT JOIN** reconstructs complete records after aggregation  
+- **OUTER JOIN** exposes missing or incomplete data  
+
+By applying the appropriate join type at each stage, the analysis provides a clear view of **which businesses have survived the longest in history**, and where data is missing across the globe.
